@@ -34,8 +34,6 @@ func (r *repositoryMongo) GetWeatherByCity(city string) (domain.Weather, error) 
 }
 
 func (r *repositoryMongo) UpdateWeather(weather domain.Weather) error {
-	fmt.Println("Updating weather")
-
 	filter := bson.D{{"city", weather.City}}
 	update := bson.D{{"$set", bson.D{
 		{"temperature", weather.Temperature},

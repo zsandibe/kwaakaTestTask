@@ -45,7 +45,6 @@ func (s *service) GetAllWeatherList() ([]domain.Weather, error) {
 
 func (s *service) GetDataFromApi(city string) (domain.ApiResponse, error) {
 	// pkg.InfoLog.Println("getResponseBody")
-	fmt.Println(s.conf.Api.Url)
 	body, err := getResponseBody(s.conf.Api.Url, city, s.conf.Api.Key)
 	if err != nil {
 		return domain.ApiResponse{}, err
@@ -61,7 +60,6 @@ func (s *service) GetDataFromApi(city string) (domain.ApiResponse, error) {
 
 func getResponseBody(url, name, key string) ([]byte, error) {
 	fullUrl := fmt.Sprintf("%s?q=%s&appid=%s", url, name, key)
-	fmt.Println(fullUrl)
 	req, err := http.NewRequest("GET", fullUrl, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
