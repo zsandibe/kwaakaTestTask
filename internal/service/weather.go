@@ -2,9 +2,11 @@ package service
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"kwaaka-task/internal/domain"
+	"kwaaka-task/pkg"
 	"net/http"
 	"time"
 )
@@ -20,47 +22,50 @@ func (s *service) UpdateWeather(city string) error {
 	}
 	weather := domain.Weather{
 		City:        response.City,
-		Temperature: response.Main.Kelvin,
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
+		Temperature: pkg.KelvinToCelsius(response.Main.Kelvin),
 	}
 	existingWeather, err := s.repo.GetWeatherByCity(city)
 	if err != nil {
-		return err
-	}
-	if existingWeather.City != weather.City {
-		return s.repo.AddWeather(weather)
-	}
+		if errors.Is(err, domain.ErrNoDocument) || existingWeather.City != weather.City {
+			// fmt.Println("OK")
 
+			weather.CreatedAt = time.Now()
+			weather.UpdatedAt = time.Now()
+			return s.repo.AddWeather(weather)
+		}
+		return errors.New(err.Error())
+	}
+	weather.UpdatedAt = time.Now()
 	return s.repo.UpdateWeather(weather)
 }
 
-func (s *service) GetDataFromApi(city string) (domain.ApiResponse, error) {
+func (s *service) GetAllWeatherList() ([]domain.Weather, error) {
+	return s.repo.GetAllWeatherList()
+}
 
+func (s *service) GetDataFromApi(city string) (domain.ApiResponse, error) {
 	// pkg.InfoLog.Println("getResponseBody")
-	body, err := getResponseBody(s.conf.Api.Url, city)
+	fmt.Println(s.conf.Api.Url)
+	body, err := getResponseBody(s.conf.Api.Url, city, s.conf.Api.Key)
 	if err != nil {
 		return domain.ApiResponse{}, err
 	}
+
 	var response domain.ApiResponse
 
 	if err := json.Unmarshal(body, &response); err != nil {
 		return domain.ApiResponse{}, fmt.Errorf("problems with unmarshalling response: %v", err)
 	}
-
 	return response, nil
 }
 
-func getResponseBody(url, name string) ([]byte, error) {
-	req, err := http.NewRequest("GET", url, nil)
+func getResponseBody(url, name, key string) ([]byte, error) {
+	fullUrl := fmt.Sprintf("%s?q=%s&appid=%s", url, name, key)
+	fmt.Println(fullUrl)
+	req, err := http.NewRequest("GET", fullUrl, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
-
-	query := req.URL.Query()
-	query.Add("q", name)
-
-	req.URL.RawQuery = query.Encode()
 
 	client := new(http.Client)
 
@@ -75,5 +80,4 @@ func getResponseBody(url, name string) ([]byte, error) {
 		return nil, fmt.Errorf("failed to read response body: %v", err)
 	}
 	return body, nil
-
 }

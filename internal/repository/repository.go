@@ -11,6 +11,7 @@ type Repository interface {
 	GetWeatherByCity(city string) (domain.Weather, error)
 	UpdateWeather(weather domain.Weather) error
 	AddWeather(weather domain.Weather) error
+	GetAllWeatherList() ([]domain.Weather, error)
 }
 
 type repositoryMongo struct {

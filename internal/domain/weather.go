@@ -5,7 +5,7 @@ import "time"
 type Weather struct {
 	Id          string    `json:"id" bson:"id"`
 	City        string    `json:"city" bson:"city"`
-	Temperature float64   `json:"temperature" bson:"temperature"`
-	CreatedAt   time.Time `json:"created_ad" bson:"created_ad"`
-	UpdatedAt   time.Time `json:"updated_ad" bson:"updated_ad"`
+	Temperature float32   `json:"temperature" bson:"temperature"`
+	CreatedAt   time.Time `json:"created_at" bson:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at" bson:"updated_at"`
 }

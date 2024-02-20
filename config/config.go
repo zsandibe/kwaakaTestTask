@@ -25,6 +25,7 @@ type serverConfig struct {
 
 type apiConfig struct {
 	Url string
+	Key string
 }
 
 func NewConfig() Config {
@@ -42,6 +43,9 @@ func NewConfig() Config {
 			NameDb:         os.Getenv("NAME_DB"),
 			NameCollection: os.Getenv("NAME_COLLECTION"),
 		},
-		apiConfig{},
+		apiConfig{
+			Url: os.Getenv("API_URL"),
+			Key: os.Getenv("API_KEY"),
+		},
 	}
 }

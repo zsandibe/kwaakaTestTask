@@ -6,5 +6,6 @@ func (h *handler) Routes() *gin.Engine {
 	router := gin.Default()
 	router.PUT("/weather", h.UpdateWeather)
 	router.GET("/weather", h.GetWeather)
+	router.GET("/weatherList", h.GetAllWeather)
 	return router
 }

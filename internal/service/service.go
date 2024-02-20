@@ -10,6 +10,7 @@ type Service interface {
 	GetWeatherByCity(city string) (domain.Weather, error)
 	UpdateWeather(city string) error
 	GetDataFromApi(city string) (domain.ApiResponse, error)
+	GetAllWeatherList() ([]domain.Weather, error)
 }
 
 type service struct {
